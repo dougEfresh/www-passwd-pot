@@ -103,7 +103,7 @@ function connect() {
 
     console.log('Connecting');
 
-    this.socket = new WebSocket("ws://stream.passwd-pot.com/api/v1/event/stream/random");
+    this.socket = new WebSocket("wss://stream.passwd-pot.com/api/v1/event/stream/random");
 
     this.socket.onopen = function () {
         console.log('Connected');
