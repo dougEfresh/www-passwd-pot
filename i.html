@@ -22,7 +22,8 @@
 <thead>
 <tr>
 <th>Country</th>
-<th>Botnet</th>
+<th>User</th>
+<th>Password</th>
 </tr>
 </thead>
 <tbody id='con'>
@@ -32,7 +33,7 @@
 <script>
        var g_ws = null;
     var g_mark_limit = 2000;
-    var g_con_limit = 6;
+    var g_con_limit = 9;
     var g_i = 0;
     var g_map = $("#map");
        var g_con = $('#con');
@@ -75,15 +76,16 @@
     {
         var country = country_map[data['RemoteCountry']];
        if (country == undefined) {
-       console.log('Remote Country ' + data['RemoteCountry'] + ' not in map');
-       return;
+           console.log('Remote Country ' + data['RemoteCountry'] + ' not in map');
+           return;
        }
         var row =
             '<tr height="40px" id="c'+g_i+'">' +
             '<td width="200px;"><img height="16px" width="16px" src="/img/flags/' + data['RemoteCountry'].toLowerCase() + '.png" /> '
             + country +
             '</td>' +
-            '<td width="100px;"><b style="color:' + data['RemoteCountry'] + ';">' + data['Passwd'] + '</b></td></tr>';
+    '<td width="50px;"><b>' + data.User + '</b></td>' +
+        '<td width="50;"><b style="color:#1CF49C;">' + data.Passwd + '</b></td></tr>';
 
         add_row(row, data);
     }
