@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="shortcut icon" href="favicon.png">
+<title>Attacks Per Country</title>
+<meta name="description" content="Map of password attempts around the world.">
+<link href="//maxcdn.bootstrapcdn.com/bootstrap/latest/css/bootstrap.min.css" rel="stylesheet">
+<link href="//maxcdn.bootstrapcdn.com/bootstrap/latest/css/bootstrap-theme.min.css" rel="stylesheet">
+<link href="/elegant-icons-style.css" rel="stylesheet"/>
+<link href="//maxcdn.bootstrapcdn.com/font-awesome/latest/css/font-awesome.min.css" rel="stylesheet"/>
+<link href="jquery-jvectormap-1.2.2.css" rel="stylesheet">
+<script src="//cdnjs.cloudflare.com/ajax/libs/jquery/1.8.3/jquery.js"></script>
+<script src="jquery-jvectormap-1.2.2.min.js"></script>
+<script src="jquery-jvectormap-world-mill-en.js"></script>
+<script src="country_map.js"></script>
+</head>
+<body>
+<table class="table" id="bot-console" style="background-color: black; opacity: 0.7; position: absolute; left: 15px; bottom: 0px; z-index: 100; width: 300px; height: 100px; margin: 0px; padding: 0px; color: white;">
+<thead>
+<tr>
+<th>Country</th>
+<th>User</th>
+<th>Password</th>
+</tr>
+</thead>
+<tbody id='con'>
+</tbody>
+</table>
+<div id="map" style="min-height: 350px; height:calc(100vh);"></div>
+<script>
+
+$(function(){
+    $.getJSON("https://api.passwd-pot.com/api/v1/event/stats/country", function(data) {
+        var ccStats = {};
+
+        data.forEach(function(s) {
+            if (ccStats[s.Country] === undefined) {
+                ccStats[s.Country] = 0;
+            }
+            ccStats[s.Country] += s.Hits;
+        });
+        console.log(JSON.stringify(ccStats));
+        $('#map').vectorMap({
+            map: 'world_mill_en',
+            series: {
+                regions: [{
+                    values: ccStats,
+                    scale: ['#C8EEFF', '#000000'],
+                    normalizeFunction: 'polynomial'
+                }]
+            },
+            onRegionTipShow: function (e, el, code) {
+                var nf = new Intl.NumberFormat();
+                el.html(el.html() + ' Attacks - ' + nf.format(ccStats[code] === undefined ? 0 :ccStats[code]  ) + ' ');
+            }
+        });
+    });
+});
+</script>
+</body>
+</html>

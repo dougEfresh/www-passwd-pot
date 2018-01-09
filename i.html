@@ -1,9 +1,9 @@
-<!DOCTYPE html>
+sXC<!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<link rel="shortcut icon" href="img/favicon.png">
+<link rel="shortcut icon" href="favicon.png">
 <title>Full Spectrum Cyber Pew Pew</title>
 <meta name="description" content="Live map showing realtime botnet check-ins around the world.">
 <link href="//maxcdn.bootstrapcdn.com/bootstrap/latest/css/bootstrap.min.css" rel="stylesheet">
@@ -15,7 +15,6 @@
 <script src="jquery-jvectormap-1.2.2.min.js"></script>
 <script src="jquery-jvectormap-world-mill-en.js"></script>
 <script src="country_map.js"></script>
-</script>
 </head>
 <body>
 <table class="table" id="bot-console" style="background-color: black; opacity: 0.7; position: absolute; left: 15px; bottom: 0px; z-index: 100; width: 300px; height: 100px; margin: 0px; padding: 0px; color: white;">
@@ -75,7 +74,7 @@
     function new_marker(data)
     {
         var country = country_map[data['RemoteCountry']];
-       if (country == undefined) {
+       if (country === undefined) {
            console.log('Remote Country ' + data['RemoteCountry'] + ' not in map');
            return;
        }
