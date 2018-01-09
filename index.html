@@ -1,8 +1,146 @@
 <!DOCTYPE html>
+<html lang="en">
 <head>
-  <meta charset="utf-8">
-  <body>
-    <p>Comming soon....see <a href="https://github.com/dougEfresh/passwd-pot" > here
-    </a> for (some) details </p>
-  </body>
+<script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+<script>
+  (adsbygoogle = window.adsbygoogle || []).push({
+    google_ad_client: "ca-pub-2861404199009447",
+    enable_page_level_ads: true
+  });
+</script>
+<!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-36076924-2"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-36076924-2');
+</script>
+
+
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="shortcut icon" href="favicon.png">
+<title>Full Spectrum Cyber Pew Pew</title>
+<meta name="description" content="Live map showing realtime botnet check-ins around the world.">
+<link href="//maxcdn.bootstrapcdn.com/bootstrap/latest/css/bootstrap.min.css" rel="stylesheet">
+<link href="//maxcdn.bootstrapcdn.com/bootstrap/latest/css/bootstrap-theme.min.css" rel="stylesheet">
+<link href="/elegant-icons-style.css" rel="stylesheet"/>
+<link href="//maxcdn.bootstrapcdn.com/font-awesome/latest/css/font-awesome.min.css" rel="stylesheet"/>
+<link href="jquery-jvectormap-1.2.2.css" rel="stylesheet">
+<script src="//cdnjs.cloudflare.com/ajax/libs/jquery/1.8.3/jquery.js"></script>
+<script src="jquery-jvectormap-1.2.2.min.js"></script>
+<script src="jquery-jvectormap-world-mill-en.js"></script>
+<script src="country_map.js"></script>
+</head>
+<body>
+<table class="table" id="bot-console" style="background-color: black; opacity: 0.7; position: absolute; left: 15px; bottom: 0px; z-index: 100; width: 300px; height: 100px; margin: 0px; padding: 0px; color: white;">
+<thead>
+<tr>
+<th>Country</th>
+<th>User</th>
+<th>Password</th>
+</tr>
+</thead>
+<tbody id='con'>
+</tbody>
+</table>
+<div id="map" style="min-height: 350px; height:calc(100vh);"></div>
+<script>
+       var g_ws = null;
+    var g_mark_limit = 2000;
+    var g_con_limit = 9;
+    var g_i = 0;
+    var g_map = $("#map");
+       var g_con = $('#con');
+    var map = $('#map').vectorMap({
+        map: "world_mill_en",
+        realtime: true,
+        zoomOnScroll: !1,
+        regionStyle: {
+            initial: {
+                fill: "#000000"
+            }
+        },
+        markerStyle: {
+            initial: {
+                fill: "#2E9AFE"
+            }
+        },
+        series: {
+            regions: [{
+                scale: ["#000000", "#000000"],
+                normalizeFunction: "polynomial"
+            }]
+        }
+    });
+
+    g_map = map.vectorMap("get", "mapObject");
+
+    function HideConsole()
+    {
+        if($('#hide-console').is(":checked"))
+        {
+            $('#bot-console').hide();
+        }else{
+            $('#bot-console').show();
+        }
+
+    }
+
+    function new_marker(data)
+    {
+        var country = country_map[data['RemoteCountry']];
+       if (country === undefined) {
+           console.log('Remote Country ' + data['RemoteCountry'] + ' not in map');
+           return;
+       }
+        var row =
+            '<tr height="40px" id="c'+g_i+'">' +
+            '<td width="200px;"><img height="16px" width="16px" src="/img/flags/' + data['RemoteCountry'].toLowerCase() + '.png" /> '
+            + country +
+            '</td>' +
+    '<td width="50px;"><b>' + data.User + '</b></td>' +
+        '<td width="50;"><b style="color:#1CF49C;">' + data.Passwd + '</b></td></tr>';
+
+        add_row(row, data);
+    }
+
+    function add_row(row, data) {
+        g_con.append(row);
+
+        if($('#con tr').length >= g_con_limit)
+            g_con.find("tr").first().remove();
+
+        g_con.animate({scrollTop: g_con.get(0).scrollHeight}, 0);
+        g_map.addMarker(g_i++, {latLng: [data['RemoteLatitude'], data['RemoteLongitude']], name: data['RemoteCountry'], style: {fill: '#1CF49C', r: 6}});
+        if(g_i >= g_mark_limit)
+            g_map.removeMarkers([g_i - g_mark_limit + 1]);
+
+
+    }
+
+    function start() {
+        $("#connect-button").prop("disabled", !0);
+        var ws = new WebSocket("wss://stream.passwd-pot.com/api/v1/event/stream/random");
+            ws.onmessage = function(e) {
+                var data = JSON.parse(e.data);
+                new_marker(data);
+            };
+            ws.onclose = function(e) {
+                map.removeAllMarkers();
+                g_con.text("");
+                server_error("Disconnected from server, please refresh to try again.");
+            };
+            g_ws = ws;
+    }
+
+    function server_error(e) {
+        alert(e);
+        g_ws.close();
+    }
+    start();
+</script>
+</body>
 </html>
